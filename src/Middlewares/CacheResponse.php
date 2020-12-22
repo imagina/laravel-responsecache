@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CacheResponse
 {
-    protected ResponseCache $responseCache;
+    protected $responseCache;
 
     public function __construct(ResponseCache $responseCache)
     {

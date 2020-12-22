@@ -9,9 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResponseCacheRepository
 {
-    protected Repository $cache;
+    protected $cache;
 
-    protected Serializer $responseSerializer;
+    protected $responseSerializer;
 
     public function __construct(Serializer $responseSerializer, Repository $cache)
     {

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class ResponseCacheHit
 {
-    public Request $request;
+    public $request;
 
     public function __construct(Request $request)
     {

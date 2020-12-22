@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResponseCache
 {
-    protected ResponseCacheRepository $cache;
+    protected $cache;
 
-    protected RequestHasher $hasher;
+    protected $hasher;
 
-    protected CacheProfile $cacheProfile;
+    protected $cacheProfile;
 
     public function __construct(ResponseCacheRepository $cache, RequestHasher $hasher, CacheProfile $cacheProfile)
     {
