@@ -1,5 +1,5 @@
 {
-    "name": "spatie/laravel-responsecache",
+    "name": "imagina/laravel-responsecache",
     "description": "Speed up a Laravel application by caching the entire response",
     "keywords": [
         "spatie",
@@ -20,7 +20,6 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
         "illuminate/cache": "^7.13|^8.0",
         "illuminate/container": "^7.13|^8.0",
         "illuminate/console": "^7.13|^8.0",
@@ -29,7 +28,6 @@
         "nesbot/carbon": "^2.35"
     },
     "require-dev": {
-        "laravel/framework": "^7.13|^8.0",
         "phpunit/phpunit" : "^9.1.5",
         "orchestra/testbench": "^5.2|^6.0",
         "mockery/mockery": "^1.4"
