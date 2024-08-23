@@ -4,7 +4,10 @@ namespace Spatie\ResponseCache;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Spatie\ResponseCache\CacheItemSelector\CacheItemSelector;
 use Spatie\ResponseCache\CacheProfiles\CacheProfile;
+use Spatie\ResponseCache\Events\ClearedResponseCache;
+use Spatie\ResponseCache\Events\ClearingResponseCache;
 use Spatie\ResponseCache\Hasher\RequestHasher;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -41,6 +44,34 @@ class ResponseCache
         return $this->cacheProfile->shouldCacheResponse($response);
     }
 
+    public function shouldBypass(Request $request): bool
+    {
+        // Ensure we return if cache_bypass_header is not setup
+        if (! config('responsecache.cache_bypass_header.name')) {
+            return false;
+        }
+        // Ensure we return if cache_bypass_header is not setup
+        if (! config('responsecache.cache_bypass_header.value')) {
+            return false;
+        }
+
+        return $request->header(config('responsecache.cache_bypass_header.name')) === (string) config('responsecache.cache_bypass_header.value');
+    }
+
+    public function shouldBypassAndSave(Request $request): bool
+    {
+        // Ensure we return if cache_bypass_header is not setup
+        if (! config('responsecache.cache_bypass_and_save_header.name')) {
+            return false;
+        }
+        // Ensure we return if cache_bypass_header is not setup
+        if (! config('responsecache.cache_bypass_and_save_header.value')) {
+            return false;
+        }
+
+        return $request->header(config('responsecache.cache_bypass_and_save_header.name')) === (string) config('responsecache.cache_bypass_and_save_header.value');
+    }
+
     public function cacheResponse(
         Request $request,
         Response $response,
@@ -50,6 +81,8 @@ class ResponseCache
         if (config('responsecache.add_cache_time_header')) {
             $response = $this->addCachedHeader($response);
         }
+
+        !is_array($tags) ? $tags = [$tags] : false;
 
         $this->taggedCache($tags)->put(
             $this->hasher->getHashFor($request),
@@ -74,7 +107,11 @@ class ResponseCache
 
     public function clear(array $tags = [])
     {
+        event(new ClearingResponseCache());
+
         $this->taggedCache($tags)->clear();
+
+        event(new ClearedResponseCache());
     }
 
     protected function addCachedHeader(Response $response): Response
@@ -97,18 +134,22 @@ class ResponseCache
      */
     public function forget($uris, array $tags = []): self
     {
+        event(new ClearingResponseCache());
+
         $uris = is_array($uris) ? $uris : func_get_args();
 
-        collect($uris)->each(function ($uri) use ($tags) {
-            $request = Request::create(url($uri));
-            $hash = $this->hasher->getHashFor($request);
-
-            if ($this->taggedCache($tags)->has($hash)) {
-                $this->taggedCache($tags)->forget($hash);
-            }
-        });
+        !is_array($tags) ? $tags = [$tags] : false;
+        !empty(config('responsecache.cache_tag')) ? array_push($tags,config('responsecache.cache_tag')) : false;
+        !empty(config('responsecache.cache_base_tag')) ? array_push($tags,config('responsecache.cache_base_tag')) : false;
+        $this->selectCachedItems()->forUrls($uris)->forget();
+        event(new ClearedResponseCache());
 
         return $this;
+    }
+
+    public function selectCachedItems(): CacheItemSelector
+    {
+        return new CacheItemSelector($this->hasher, $this->cache);
     }
 
     protected function taggedCache(array $tags = []): ResponseCacheRepository

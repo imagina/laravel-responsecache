@@ -37,24 +37,27 @@ class ResponseCacheRepository
 
     public function get(string $key): Response
     {
-        return $this->responseSerializer->unserialize($this->cache->get($key));
+        return $this->responseSerializer->unserialize($this->cache->get($key) ?? '');
     }
 
     public function clear(): void
     {
         if ($this->isTagged($this->cache)) {
-            $this->cache->clear();
+            $this->cache->flush();
 
             return;
         }
 
-        if (empty(config('responsecache.cache_tag'))) {
+        if (empty(config('responsecache.cache_tag')) && empty(config('responsecache.cache_base_tag'))) {
             $this->cache->clear();
 
             return;
         }
+        $tags = [];
+        !empty(config('responsecache.cache_tag')) ? array_push($tags,config('responsecache.cache_tag')) : false;
+        !empty(config('responsecache.cache_base_tag')) ? array_push($tags,config('responsecache.cache_base_tag')) : false;
 
-        $this->cache->tags(config('responsecache.cache_tag'))->flush();
+        $this->cache->tags($tags)->flush();
     }
 
     public function forget(string $key): bool
@@ -64,6 +67,10 @@ class ResponseCacheRepository
 
     public function tags(array $tags): self
     {
+        if ($this->isTagged($this->cache)) {
+            $tags = array_merge($this->cache->getTags()->getNames(), $tags);
+        }
+
         return new self($this->responseSerializer, $this->cache->tags($tags));
     }
 
