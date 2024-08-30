@@ -13,27 +13,27 @@ use Spatie\ResponseCache\Serializers\Serializer;
 use Spatie\ResponseCache\Test\Serializers\TestSerializer;
 
 beforeEach(function () {
-        $this->textContent = '<html>This is a response</html>';
-        $this->jsonContent = json_encode(['text' => 'This is a response']);
+    $this->textContent = '<html>This is a response</html>';
+    $this->jsonContent = json_encode(['text' => 'This is a response']);
 
-        $this->statusCode = 500;
+    $this->statusCode = 500;
 });
 
 it('can serialize and unserialize a response', function () {
-        // Instantiate a default serializer
-        $responseSerializer = app(Serializer::class);
+    // Instantiate a default serializer
+    $responseSerializer = app(Serializer::class);
 
     $testResponse = new Response(
-            $this->textContent,
-            $this->statusCode,
-            ['testHeader' => 'testValue']
-        );
+        $this->textContent,
+        $this->statusCode,
+        ['testHeader' => 'testValue']
+    );
 
-        $serializedResponse = $responseSerializer->serialize($testResponse);
+    $serializedResponse = $responseSerializer->serialize($testResponse);
 
     assertTrue(is_string($serializedResponse));
 
-        $unserializedResponse = $responseSerializer->unserialize($serializedResponse);
+    $unserializedResponse = $responseSerializer->unserialize($serializedResponse);
 
     assertInstanceOf(Response::class, $unserializedResponse);
 
@@ -45,23 +45,23 @@ it('can serialize and unserialize a response', function () {
 });
 
 it('can customize serialize and unserialize a response', function () {
-        // Set config dynamically for test
-        Config::set('responsecache.serializer', TestSerializer::class);
+    // Set config dynamically for test
+    Config::set('responsecache.serializer', TestSerializer::class);
 
-        // Instantiate a custom serializer according to config
-        $responseSerializer = app(Serializer::class);
+    // Instantiate a custom serializer according to config
+    $responseSerializer = app(Serializer::class);
 
     $testResponse = new JsonResponse(
-            $this->jsonContent,
-            $this->statusCode,
-            ['testHeader' => 'testValue']
-        );
+        $this->jsonContent,
+        $this->statusCode,
+        ['testHeader' => 'testValue']
+    );
 
-        $serializedResponse = $responseSerializer->serialize($testResponse);
+    $serializedResponse = $responseSerializer->serialize($testResponse);
 
     assertTrue(is_string($serializedResponse));
 
-        $unserializedResponse = $responseSerializer->unserialize($serializedResponse);
+    $unserializedResponse = $responseSerializer->unserialize($serializedResponse);
 
     assertInstanceOf(JsonResponse::class, $unserializedResponse);
 
@@ -73,5 +73,5 @@ it('can customize serialize and unserialize a response', function () {
 });
 
 it('throws an exception when something else than a response is unserialized', function () {
-        app(Serializer::class)->unserialize('b:0;');
+    app(Serializer::class)->unserialize('b:0;');
 })->throws(CouldNotUnserialize::class);

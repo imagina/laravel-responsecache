@@ -2,6 +2,233 @@
 
 All notable changes to `laravel-responsecache` will be documented in this file.
 
+## 7.6.0 - 2024-08-05
+
+### What's Changed
+
+* Bump stefanzweifel/git-auto-commit-action from 5.0.0 to 5.0.1 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/470
+* Fix incorrect grammar by @SebKay in https://github.com/spatie/laravel-responsecache/pull/472
+* Add missing Laravel 11.x Documentation by @omaratpxt in https://github.com/spatie/laravel-responsecache/pull/474
+* Bump dependabot/fetch-metadata from 1.6.0 to 2.2.0 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/475
+* Switch DefaultHasher to xxh128 for a faster alternative to MD5. by @marcell-ferenc in https://github.com/spatie/laravel-responsecache/pull/478
+
+### New Contributors
+
+* @SebKay made their first contribution in https://github.com/spatie/laravel-responsecache/pull/472
+* @omaratpxt made their first contribution in https://github.com/spatie/laravel-responsecache/pull/474
+* @marcell-ferenc made their first contribution in https://github.com/spatie/laravel-responsecache/pull/478
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.5.2...7.6.0
+
+## 7.5.2 - 2024-04-03
+
+### What's Changed
+
+* Cast cache lifetime to integer by default by @dwightwatson in https://github.com/spatie/laravel-responsecache/pull/468
+
+### New Contributors
+
+* @dwightwatson made their first contribution in https://github.com/spatie/laravel-responsecache/pull/468
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.5.1...7.5.2
+
+## 7.5.1 - 2024-03-23
+
+- allow Carbon 3
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.5.0...7.5.1
+
+## 7.5.0 - 2024-03-11
+
+### What's Changed
+
+* Add php 8.3 matrix by @binbyz in https://github.com/spatie/laravel-responsecache/pull/460
+* Support Laravel 11
+
+### New Contributors
+
+* @binbyz made their first contribution in https://github.com/spatie/laravel-responsecache/pull/460
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.10...7.5.0
+
+## 7.4.10 - 2023-10-28
+
+### What's Changed
+
+- Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/449
+- Bump stefanzweifel/git-auto-commit-action from 4.16.0 to 5.0.0 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/452
+- Do not enable cache time header by default by @francoism90 in https://github.com/spatie/laravel-responsecache/pull/456
+
+### New Contributors
+
+- @francoism90 made their first contribution in https://github.com/spatie/laravel-responsecache/pull/456
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.9...7.4.10
+
+## 7.4.9 - 2023-10-02
+
+- Fix docblock
+
+## 7.4.8 - 2023-09-27
+
+### What's Changed
+
+- Change PHPDoc for method clear(array ) in Facade by @kra-so in https://github.com/spatie/laravel-responsecache/pull/451
+
+### New Contributors
+
+- @gomzyakov made their first contribution in https://github.com/spatie/laravel-responsecache/pull/437
+- @kra-so made their first contribution in https://github.com/spatie/laravel-responsecache/pull/451
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.7...7.4.8
+
+## 7.4.7 - 2023-04-07
+
+### What's Changed
+
+- Bump dependabot/fetch-metadata from 1.3.5 to 1.3.6 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/427
+- Property name changed by @Fot0n in https://github.com/spatie/laravel-responsecache/pull/428
+- Typo fix in config responsecache by @dorqa95 in https://github.com/spatie/laravel-responsecache/pull/431
+- Issue #342: CacheResponse race condition with has and get by @swichers in https://github.com/spatie/laravel-responsecache/pull/434
+
+### New Contributors
+
+- @Fot0n made their first contribution in https://github.com/spatie/laravel-responsecache/pull/428
+- @dorqa95 made their first contribution in https://github.com/spatie/laravel-responsecache/pull/431
+- @swichers made their first contribution in https://github.com/spatie/laravel-responsecache/pull/434
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.6...7.4.7
+
+## 7.4.6 - 2023-01-23
+
+- add support for L10
+
+## 7.4.5 - 2023-01-23
+
+### What's Changed
+
+- Bump stefanzweifel/git-auto-commit-action from 4.15.4 to 4.16.0 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/424
+- Normalize query string parameters before hashing by @cosmastech in https://github.com/spatie/laravel-responsecache/pull/426
+
+### New Contributors
+
+- @cosmastech made their first contribution in https://github.com/spatie/laravel-responsecache/pull/426
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.4...7.4.5
+
+## 7.4.4 - 2022-11-25
+
+### What's Changed
+
+- Refactor tests to pest by @AyoobMH in https://github.com/spatie/laravel-responsecache/pull/418
+- Add PHP 8.2 Support to tests workflow by @patinthehat in https://github.com/spatie/laravel-responsecache/pull/421
+- Add Dependabot Automation by @patinthehat in https://github.com/spatie/laravel-responsecache/pull/420
+- Bump actions/checkout from 2 to 3 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/423
+- Bump stefanzweifel/git-auto-commit-action from 2.3.0 to 4.15.4 by @dependabot in https://github.com/spatie/laravel-responsecache/pull/422
+- Catch CouldNotUnserialize exception and continue returning a response by @roberttolton in https://github.com/spatie/laravel-responsecache/pull/408
+
+### New Contributors
+
+- @AyoobMH made their first contribution in https://github.com/spatie/laravel-responsecache/pull/418
+- @dependabot made their first contribution in https://github.com/spatie/laravel-responsecache/pull/423
+- @roberttolton made their first contribution in https://github.com/spatie/laravel-responsecache/pull/408
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.3...7.4.4
+
+## 7.4.3 - 2022-09-24
+
+### What's Changed
+
+- Dispatch clear events when using facade by @mateusjunges in https://github.com/spatie/laravel-responsecache/pull/413
+
+### New Contributors
+
+- @mateusjunges made their first contribution in https://github.com/spatie/laravel-responsecache/pull/413
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.2...7.4.3
+
+## 7.4.2 - 2022-09-02
+
+### What's Changed
+
+- Always prepend app url to requests by @apeisa in https://github.com/spatie/laravel-responsecache/pull/409
+
+### New Contributors
+
+- @apeisa made their first contribution in https://github.com/spatie/laravel-responsecache/pull/409
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.1...7.4.2
+
+## 7.4.1 - 2022-08-09
+
+### What's Changed
+
+- Cache bypass header now also prevents an already cached response from being returned by @fgilio in https://github.com/spatie/laravel-responsecache/pull/407
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.4.0...7.4.1
+
+## 7.4.0 - 2022-08-01
+
+### What's Changed
+
+- Add cache bypass header by @fgilio in https://github.com/spatie/laravel-responsecache/pull/406
+
+### New Contributors
+
+- @fgilio made their first contribution in https://github.com/spatie/laravel-responsecache/pull/406
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.3.1...7.4.0
+
+## 7.3.1 - 2022-05-30
+
+### What's Changed
+
+- Handle missed cache gracefully by @antennaio in https://github.com/spatie/laravel-responsecache/pull/383
+
+### New Contributors
+
+- @antennaio made their first contribution in https://github.com/spatie/laravel-responsecache/pull/383
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.3.0...7.3.1
+
+## 7.3.0 - 2022-05-16
+
+## What's Changed
+
+- Add option to output cache age header by @it-can in https://github.com/spatie/laravel-responsecache/pull/385
+
+## New Contributors
+
+- @it-can made their first contribution in https://github.com/spatie/laravel-responsecache/pull/385
+
+**Full Changelog**: https://github.com/spatie/laravel-responsecache/compare/7.2.0...7.3.0
+
+## 7.2.0 - 2022-01-13
+
+- support Laravel 9
+
+## 7.1.0 - 2021-04-27
+
+- add `CacheItemSelector`
+
+## 7.0.1 - 2021-04-13
+
+- add `url` option to `ClearCommand` (#348)
+
+## 7.0.0 - 2021-04-02
+
+- require PHP 8+
+- drop support for PHP 7.x
+- use PHP 8 syntax where possible
+
+## 6.6.9 - 2021-03-30
+
+- fix for issue #331 (#344)
+
+## 6.6.8 - 2020-01-25
+
+- use package service provider
+
 ## 6.6.7 - 2020-11-28
 
 - add support for PHP 8
@@ -139,29 +366,37 @@ All notable changes to `laravel-responsecache` will be documented in this file.
 Deprecated features will still work until the next major version.
 
 ## 4.1.1 - 2018-01-30
+
 - Added: Better exception handling when something goes wrong unserializing the response
 
 ## 4.1.0 - 2017-09-26
+
 - Added: Support for specific lifetimes on routes
 
 ## 4.0.1 - 2017-08-30
+
 - Fixed: Artisan command registration
 
 ## 4.0.0 - 2017-08-30
+
 - Added: Support for Laravel 5.5
 - Removed: Support for all older Laravel versions
 - Changed: Renamed facade class
 
 ## 3.2.0 - 2017-06-19
+
 - Added: Support for `BinaryFileResponse`
 
 ## 3.1.0 - 2017-04-28
+
 - Added: Support for taggable cache
 
 ## 3.0.1 - 2017-03-16
+
 - Fixed: Php version dependency in `composer.json`
 
 ## 3.0.0 - 2017-03-16
+
 - Added: `enabled` method on cache profiles
 - Added: Events
 - Changed: Middleware won't automatically be registered anymore
@@ -170,32 +405,42 @@ Deprecated features will still work until the next major version.
 - Removed: Dropped PHP 5.6 support
 
 ## 2.0.0 - 2017-01-24
+
 - Added: Support for Laravel 5.4
 - Removed: Dropped support for all older Laravel versions
 
 ## 1.1.7 - 2016-10-10
+
 - Added: Usage of `RESPONSE_CACHE_LIFETIME` env var to config file
 
 ## 1.1.6 - 2016-08-07
+
 - Changed: Debug headers will not be sent when `APP_DEBUG` is set to false
 
 ## 1.1.5 - 2015-08-28
+
 - Fixed: Issue where the cache middleware couldn't correctly determine the currently authenticated user
 
 ## 1.1.4 - 2015-08-12
+
 - Fixed: An issue where cached request were still served even if the package was disabled via the config file
 
 ## 1.1.3 - 2015-08-11
+
 - Fixed: An issue where the cache header could not be set
 
 ## 1.1.2 - 2015-07-22
+
 - Fixed: BaseCacheProfile has been made abstract (as it should have been all along)
 
 ## 1.1.1 - 2015-07-20
+
 - Fixed: Default cachetime
 
 ## 1.1.0 - 2015-07-20
+
 - Added: A command to flush the response cache
 
 ## 1.0.0 - 2015-07-20
+
 - Initial release

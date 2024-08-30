@@ -4,7 +4,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-responsecache.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-responsecache)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-![Psalm](https://github.com/spatie/laravel-responsecache/workflows/psalm/badge.svg)
+![Tests](https://github.com/spatie/laravel-responsecache/actions/workflows/run-tests.yml/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-responsecache.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-responsecache)
 
 This Laravel package can cache an entire response. By default it will cache all successful get-requests that return text based content (such as html and json) for a week. This could potentially speed up the response quite considerably.
@@ -23,8 +23,10 @@ We highly appreciate you sending us a postcard from your hometown, mentioning wh
 
 ## Installation
 
+> If you're using PHP 7, install v6.x of this package.
+
 You can install the package via composer:
-``` bash
+```bash
 composer require spatie/laravel-responsecache
 ```
 
@@ -32,7 +34,7 @@ The package will automatically register itself.
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="Spatie\ResponseCache\ResponseCacheServiceProvider"
+php artisan vendor:publish --tag="responsecache-config"
 ```
 
 This is the contents of the published config file:
@@ -56,6 +58,15 @@ return [
     'cache_profile' => Spatie\ResponseCache\CacheProfiles\CacheAllSuccessfulGetRequests::class,
 
     /*
+     *  Optionally, you can specify a header that will force a cache bypass.
+     *  This can be useful to monitor the performance of your application.
+     */
+    'cache_bypass_header' => [
+        'name' => env('CACHE_BYPASS_HEADER_NAME', null),
+        'value' => env('CACHE_BYPASS_HEADER_VALUE', null),
+    ],
+
+    /*
      * When using the default CacheRequestFilter this setting controls the
      * default number of seconds responses must be cached.
      */
@@ -73,6 +84,20 @@ return [
      * the time at which the response was cached
      */
     'cache_time_header_name' => env('RESPONSE_CACHE_HEADER_NAME', 'laravel-responsecache'),
+
+    /*
+     * This setting determines if a http header named with the cache age
+     * should be added to a cached response. This can be handy when
+     * debugging.
+     * ONLY works when "add_cache_time_header" is also active!
+     */
+    'add_cache_age_header' => env('RESPONSE_CACHE_AGE_HEADER', false),
+
+    /*
+     * This setting determines the name of the http header that contains
+     * the age of cache
+     */
+    'cache_age_header_name' => env('RESPONSE_CACHE_AGE_HEADER_NAME', 'laravel-responsecache-age'),
 
     /*
      * Here you may define the cache store that should be used to store
@@ -105,14 +130,43 @@ return [
     'hasher' => \Spatie\ResponseCache\Hasher\DefaultHasher::class,
 
     /*
-     * This class serializes cache data and expands it.
-     * Serialization can save the data to be returned in an appropriate form.
+     * This class is responsible for serializing responses.
      */
-    'serializer' => \Spatie\ResponseCache\Serializer\DefaultSerializer::class,
+    'serializer' => \Spatie\ResponseCache\Serializers\DefaultSerializer::class,
 ];
 ```
 
-And finally you should install the provided middlewares `\Spatie\ResponseCache\Middlewares\CacheResponse::class` and `\Spatie\ResponseCache\Middlewares\DoNotCacheResponse` in the http kernel.
+And finally you should install the provided middlewares `\Spatie\ResponseCache\Middlewares\CacheResponse::class` and `\Spatie\ResponseCache\Middlewares\DoNotCacheResponse`.
+
+
+**For laravel 11.x and newer:**
+
+Add the middleware definitions to the bootstrap app.
+
+```php
+// bootstrap/app.php
+
+
+->withMiddleware(function (Middleware $middleware) {
+    ...
+    $middleware->web(append: [
+        ...
+        \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+    ]);
+
+    ...
+
+    $middleware->alias([
+        ...
+        'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
+    ]);
+})
+
+```
+
+**For laravel 10.x and earlier:**
+
+Add the middleware definitions to the http kernel.
 
 
 ```php
@@ -128,7 +182,7 @@ protected $middlewareGroups = [
 
 ...
 
-protected $routeMiddleware = [
+protected $middlewareAliases = [
    ...
    'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
 ];
@@ -139,9 +193,9 @@ protected $routeMiddleware = [
 
 ### Basic usage
 
-By default, the package will cache all successful `get`-requests for a week.
+By default, the package will cache all successful `GET` requests for a week.
 Logged in users will each have their own separate cache. If this behaviour is what you
- need, you're done: installing the `ResponseCacheServerProvider` was enough.
+ need, you're done: installing the `ResponseCacheServiceProvider` was enough.
 
 ### Clearing the cache
 
@@ -151,7 +205,7 @@ The entire cache can be cleared with:
 ```php
 ResponseCache::clear();
 ```
-This will clear everything from the cache store specified in the config-file.
+This will clear everything from the cache store specified in the config file.
 
 #### Using a console command
 
@@ -188,27 +242,63 @@ trait ClearsResponseCache
 }
 ```
 
-### Forget one or several specific URI(s)
+### Forget one or several specific URIs
 
 You can forget specific URIs with:
 ```php
-// Forget one URI
+// Forget one
 ResponseCache::forget('/some-uri');
 
-// Forget several URIs
+// Forget several
 ResponseCache::forget(['/some-uri', '/other-uri']);
 
-// Alternatively
+// Equivalent to the example above
 ResponseCache::forget('/some-uri', '/other-uri');
 ```
 
-The `forget` method only works when you're not using a `cacheNameSuffix` in your cache profile.
+The `ResponseCache::forget` method only works when you're not using a `cacheNameSuffix` in your cache profile, 
+use `ResponseCache::selectCachedItems` to deal with `cacheNameSuffix`.
+
+### Forgetting a selection of cached items
+
+You can use `ResponseCache::selectCachedItems()` to specify which cached items should be forgotten.
+
+```php
+
+// forgetting all PUT responses of /some-uri
+ResponseCache::selectCachedItems()->withPutMethod()->forUrls('/some-uri')->forget();
+
+// forgetting all PUT responses of multiple endpoints
+ResponseCache::selectCachedItems()->withPutMethod()->forUrls(['/some-uri','/other-uri'])->forget();
+
+// this is equivalent to the example above
+ResponseCache::selectCachedItems()->withPutMethod()->forUrls('/some-uri','/other-uri')->forget();
+
+// forget /some-uri cached with "100" suffix (by default suffix is user->id or "")
+ResponseCache::selectCachedItems()->usingSuffix('100')->forUrls('/some-uri')->forget();
+
+// all options combined
+ResponseCache::selectCachedItems()
+    ->withPutMethod()
+    ->withHeaders(['foo'=>'bar'])
+    ->withCookies(['cookie1' => 'value'])
+    ->withParameters(['param1' => 'value'])
+    ->withRemoteAddress('127.0.0.1')
+    ->usingSuffix('100') 
+    ->usingTags('tag1', 'tag2')
+    ->forUrls('/some-uri', '/other-uri')
+    ->forget();
+
+```
+
+The `cacheNameSuffix` depends by your cache profile, by default is the user ID or an empty string if not authenticated.
 
 ### Preventing a request from being cached
-Requests can be ignored by using the `doNotCacheResponse`-middleware.
+
+Requests can be ignored by using the `doNotCacheResponse` middleware.
 This middleware [can be assigned to routes and controllers](http://laravel.com/docs/master/controllers#controller-middleware).
 
-Using the middleware are route could be exempt from being cached.
+Using the middleware our route could be exempt from being cached.
 
 ```php
 // app/Http/routes.php
@@ -228,12 +318,17 @@ class UserController extends Controller
 }
 ```
 
+### Purposefully bypassing the cache
+
+It's possible to purposefully and securely bypass the cache and ensure you always receive a fresh response. This may be useful in case you want to profile some endpoint or in case you need to debug a response.
+In any case, all you need to do is fill the `CACHE_BYPASS_HEADER_NAME` and `CACHE_BYPASS_HEADER_VALUE` environment variables and then use that custom header when performing the requests.
+
 ### Creating a custom cache profile
 To determine which requests should be cached, and for how long, a cache profile class is used.
 The default class that handles these questions is `Spatie\ResponseCache\CacheProfiles\CacheAllSuccessfulGetRequests`.
 
 You can create your own cache profile class by implementing the `
-Spatie\ResponseCache\CacheProfiles\CacheProfile`-interface. Let's take a look at the interface:
+Spatie\ResponseCache\CacheProfiles\CacheProfile` interface. Let's take a look at the interface:
 
 ```php
 interface CacheProfile
@@ -276,7 +371,7 @@ interface CacheProfile
 Instead of registering the `cacheResponse` middleware globally, you can also register it as route middleware.
 
 ```php
-protected $routeMiddleware = [
+protected $middlewareAliases = [
    ...
    'cacheResponse' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
 ];
@@ -365,18 +460,18 @@ These events are fired respectively when the `responsecache:clear` is started an
 To replace cached content by dynamic content, you can create a replacer.
 By default we add a `CsrfTokenReplacer` in the config file.
 
-You can create your own replacers by implementing the `Spatie\ResponseCache\Replacers\Replacer`-interface. Let's take a look at the interface:
+You can create your own replacers by implementing the `Spatie\ResponseCache\Replacers\Replacer` interface. Let's take a look at the interface:
 
 ```php
 interface Replacer
 {
     /*
-     * Transform the initial response before it gets cached.
+     * Prepare the initial response before it gets cached.
      *
      * For example: replace a generated csrf_token by '<csrf-token-here>' that you can
      * replace with its dynamic counterpart when the cached response is returned.
      */
-    public function transformInitialResponse(Response $response): void;
+    public function prepareResponseToCache(Response $response): void;
 
     /*
      * Replace any data you want in the cached response before it gets
@@ -384,7 +479,7 @@ interface Replacer
      *
      * For example: replace '<csrf-token-here>' by a call to csrf_token()
      */
-    public function replaceCachedResponse(Response $response): void;
+    public function replaceInCachedResponse(Response $response): void;
 }
 ```
 
@@ -420,11 +515,6 @@ interface Serializer
     public function unserialize(string $serializedResponse): Response;
 }
 ```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
 ## Testing
 
 You can run the tests with:
@@ -437,13 +527,17 @@ composer test
 - [Barry Vd. Heuvel](https://twitter.com/barryvdh) made [a package that caches responses by leveraging HttpCache](https://github.com/barryvdh/laravel-httpcache).
 - [Joseph Silber](https://twitter.com/joseph_silber) created [Laravel Page Cache](https://github.com/JosephSilber/page-cache) that can write it's cache to disk and let Nginx read them, so PHP doesn't even have to start up anymore.
 
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
 
 ## Security
 
-If you discover any security related issues, please email freek@spatie.be instead of using the issue tracker.
+If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using the issue tracker.
 
 ## Credits
 

@@ -4,21 +4,23 @@ namespace Spatie\ResponseCache;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Spatie\ResponseCache\CacheItemSelector\CacheItemSelector;
 use Spatie\ResponseCache\CacheProfiles\CacheProfile;
-use Spatie\ResponseCache\Events\ClearedResponseCache;
-use Spatie\ResponseCache\Events\ClearingResponseCache;
 use Spatie\ResponseCache\Hasher\RequestHasher;
 use Symfony\Component\HttpFoundation\Response;
 
 class ResponseCache
 {
-    public function __construct(
-        protected ResponseCacheRepository $cache,
-        protected RequestHasher $hasher,
-        protected CacheProfile $cacheProfile,
-    ) {
-        //
+    protected ResponseCacheRepository $cache;
+
+    protected RequestHasher $hasher;
+
+    protected CacheProfile $cacheProfile;
+
+    public function __construct(ResponseCacheRepository $cache, RequestHasher $hasher, CacheProfile $cacheProfile)
+    {
+        $this->cache = $cache;
+        $this->hasher = $hasher;
+        $this->cacheProfile = $cacheProfile;
     }
 
     public function enabled(Request $request): bool
@@ -77,8 +79,6 @@ class ResponseCache
             $response = $this->addCachedHeader($response);
         }
 
-        !is_array($tags) ? $tags = [$tags] : false;
-
         $this->taggedCache($tags)->put(
             $this->hasher->getHashFor($request),
             $response,
@@ -100,13 +100,9 @@ class ResponseCache
         return $this->taggedCache($tags)->get($this->hasher->getHashFor($request));
     }
 
-    public function clear(array $tags = []): void
+    public function clear(array $tags = [])
     {
-        event(new ClearingResponseCache());
-
         $this->taggedCache($tags)->clear();
-
-        event(new ClearedResponseCache());
     }
 
     protected function addCachedHeader(Response $response): Response
@@ -127,10 +123,8 @@ class ResponseCache
      *
      * @return \Spatie\ResponseCache\ResponseCache
      */
-    public function forget(string | array $uris, array $tags = []): self
+    public function forget($uris, array $tags = []): self
     {
-        event(new ClearingResponseCache());
-
         $uris = is_array($uris) ? $uris : func_get_args();
 
         !is_array($tags) ? $tags = [$tags] : false;
@@ -140,11 +134,6 @@ class ResponseCache
         event(new ClearedResponseCache());
 
         return $this;
-    }
-
-    public function selectCachedItems(): CacheItemSelector
-    {
-        return new CacheItemSelector($this->hasher, $this->cache);
     }
 
     protected function taggedCache(array $tags = []): ResponseCacheRepository

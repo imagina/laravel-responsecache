@@ -8,6 +8,7 @@ use function PHPUnit\Framework\assertNull;
 
 use Spatie\ResponseCache\Events\ClearedResponseCache;
 use Spatie\ResponseCache\Events\ClearingResponseCache;
+
 use Spatie\ResponseCache\ResponseCacheRepository;
 
 beforeEach(function () {
@@ -22,11 +23,11 @@ beforeEach(function () {
 
 
 it('will clear the cache', function () {
-        $firstResponse = $this->get('/random');
+    $firstResponse = $this->get('/random');
 
-        Artisan::call('responsecache:clear');
+    Artisan::call('responsecache:clear');
 
-        $secondResponse = $this->get('/random');
+    $secondResponse = $this->get('/random');
 
     assertRegularResponse($firstResponse);
     assertRegularResponse($secondResponse);
@@ -53,20 +54,20 @@ it('will clear only one page from cache', function () {
 });
 
 it('will fire events when clearing the cache', function () {
-        Event::fake();
+    Event::fake();
 
-        Artisan::call('responsecache:clear');
+    Artisan::call('responsecache:clear');
 
-        Event::assertDispatched(ClearingResponseCache::class);
-        Event::assertDispatched(ClearedResponseCache::class);
+    Event::assertDispatched(ClearingResponseCache::class);
+    Event::assertDispatched(ClearedResponseCache::class);
 });
 
 it('will clear all when tags are not defined', function () {
     $responseCache = ($this->createTaggableResponseCacheStore)(null);
-        $appCache = $this->app['cache']->store('array');
+    $appCache = $this->app['cache']->store('array');
 
-        $appCache->forever('appData', 'someValue');
-        $responseCache->clear();
+    $appCache->forever('appData', 'someValue');
+    $responseCache->clear();
 
     assertNull($appCache->get('appData'));
 });
