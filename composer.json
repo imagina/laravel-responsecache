@@ -62,6 +62,9 @@
             ],
             "aliases": {
                 "ResponseCache": "Spatie\\ResponseCache\\Facades\\ResponseCache"
+            },
+            "branch-alias": {
+                "dev-v8.x": "10.0.x-dev"
             }
         }
     },
