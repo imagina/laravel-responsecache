@@ -28,16 +28,16 @@ class CacheResponse
         $lifetimeInSeconds = $this->getLifetime($args);
         $tags = $this->getTags($args);
 
-        if ($this->responseCache->enabled($request) &&  !$this->responseCache->shouldBypassAndSave($request) && !$this->responseCache->shouldBypass($request)) {
+        if ($this->responseCache->enabled($request) && ! $this->responseCache->shouldBypassAndSave($request) && ! $this->responseCache->shouldBypass($request)) {
             try {
 
-            if ($this->responseCache->hasBeenCached($request, $tags)) {
+                if ($this->responseCache->hasBeenCached($request, $tags)) {
 
                     $response = $this->getCachedResponse($request, $tags);
                     if ($response !== false) {
-                return $response;
-            }
-        }
+                        return $response;
+                    }
+                }
             } catch (CouldNotUnserialize $e) {
                 report("Could not unserialize response, returning uncached response instead. Error: {$e->getMessage()}");
                 event(new CacheMissed($request));

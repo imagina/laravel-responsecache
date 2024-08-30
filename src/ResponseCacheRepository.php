@@ -45,8 +45,8 @@ class ResponseCacheRepository
             return;
         }
         $tags = [];
-        !empty(config('responsecache.cache_tag')) ? array_push($tags,config('responsecache.cache_tag')) : false;
-        !empty(config('responsecache.cache_base_tag')) ? array_push($tags,config('responsecache.cache_base_tag')) : false;
+        ! empty(config('responsecache.cache_tag')) ? array_push($tags, config('responsecache.cache_tag')) : false;
+        ! empty(config('responsecache.cache_base_tag')) ? array_push($tags, config('responsecache.cache_base_tag')) : false;
 
         $this->cache->tags($tags)->flush();
     }

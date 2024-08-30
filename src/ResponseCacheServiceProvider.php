@@ -41,10 +41,11 @@ class ResponseCacheServiceProvider extends PackageServiceProvider
             ->needs(Repository::class)
             ->give(function (): Repository {
                 $repository = app('cache')->store(config('responsecache.cache_store'));
-                if (! empty(config('responsecache.cache_tag')) || !empty(config('responsecache.cache_base_tag'))) {
+                if (! empty(config('responsecache.cache_tag')) || ! empty(config('responsecache.cache_base_tag'))) {
                     $tags = [];
-                    !empty(config('responsecache.cache_tag')) ? array_push($tags,config('responsecache.cache_tag')) : false;
-                    !empty(config('responsecache.cache_base_tag')) ? array_push($tags,config('responsecache.cache_base_tag')) : false;
+                    ! empty(config('responsecache.cache_tag')) ? array_push($tags, config('responsecache.cache_tag')) : false;
+                    ! empty(config('responsecache.cache_base_tag')) ? array_push($tags, config('responsecache.cache_base_tag')) : false;
+
                     return $repository->tags($tags);
                 }
 

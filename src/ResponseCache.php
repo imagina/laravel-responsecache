@@ -127,9 +127,9 @@ class ResponseCache
     {
         $uris = is_array($uris) ? $uris : func_get_args();
 
-        !is_array($tags) ? $tags = [$tags] : false;
-        !empty(config('responsecache.cache_tag')) ? array_push($tags,config('responsecache.cache_tag')) : false;
-        !empty(config('responsecache.cache_base_tag')) ? array_push($tags,config('responsecache.cache_base_tag')) : false;
+        ! is_array($tags) ? $tags = [$tags] : false;
+        ! empty(config('responsecache.cache_tag')) ? array_push($tags, config('responsecache.cache_tag')) : false;
+        ! empty(config('responsecache.cache_base_tag')) ? array_push($tags, config('responsecache.cache_base_tag')) : false;
         $this->selectCachedItems()->forUrls($uris)->forget();
         event(new ClearedResponseCache());
 
