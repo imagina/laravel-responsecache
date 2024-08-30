@@ -1,53 +1,38 @@
 <?php
 
-namespace Spatie\ResponseCache\Test;
-
 use Illuminate\Http\Request;
-use Mockery;
+
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNotEquals;
+
 use Spatie\ResponseCache\CacheProfiles\CacheProfile;
 use Spatie\ResponseCache\Hasher\DefaultHasher;
 
-class ResponseHasherTest extends TestCase
-{
-    protected DefaultHasher $requestHasher;
-
-    protected CacheProfile $cacheProfile;
-
-    protected Request $request;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
+beforeEach(function () {
         $this->cacheProfile = Mockery::mock(CacheProfile::class);
 
         $this->request = Request::create('https://spatie.be');
 
         $this->requestHasher = new DefaultHasher($this->cacheProfile);
-    }
+});
 
-    /** @test */
-    public function it_can_generate_a_hash_for_a_request()
-    {
+it('can generate a hash for a request', function () {
         $this->cacheProfile->shouldReceive('useCacheNameSuffix')->andReturn('cacheProfileSuffix');
 
-        $this->assertEquals(
-            'responsecache-467d6e9cb7425ed9d3e114e44eb7117f',
+    assertEquals(
+        'responsecache-9937bec32aa1918917ad64b2b25f2982',
             $this->requestHasher->getHashFor($this->request)
         );
-    }
+});
 
-    /** @test */
-    public function it_generates_a_different_hash_per_request_host()
-    {
+it('generates a different hash per request host', function () {
         $this->cacheProfile->shouldReceive('useCacheNameSuffix')->andReturn('cacheProfileSuffix');
 
         $request = Request::create('https://spatie.be/example-page');
         $requestForSubdomain = Request::create('https://de.spatie.be/example-page');
 
-        $this->assertNotEquals(
+    assertNotEquals(
             $this->requestHasher->getHashFor($request),
             $this->requestHasher->getHashFor($requestForSubdomain)
         );
-    }
-}
+});

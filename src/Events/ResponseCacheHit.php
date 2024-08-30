@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 
 class ResponseCacheHit
 {
-    public $request;
-
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        public Request $request,
+    ) {
+        //
     }
 }

@@ -13,17 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResponseCache
 {
-    protected $cache;
-
-    protected $hasher;
-
-    protected $cacheProfile;
-
-    public function __construct(ResponseCacheRepository $cache, RequestHasher $hasher, CacheProfile $cacheProfile)
-    {
-        $this->cache = $cache;
-        $this->hasher = $hasher;
-        $this->cacheProfile = $cacheProfile;
+    public function __construct(
+        protected ResponseCacheRepository $cache,
+        protected RequestHasher $hasher,
+        protected CacheProfile $cacheProfile,
+    ) {
+        //
     }
 
     public function enabled(Request $request): bool
@@ -105,7 +100,7 @@ class ResponseCache
         return $this->taggedCache($tags)->get($this->hasher->getHashFor($request));
     }
 
-    public function clear(array $tags = [])
+    public function clear(array $tags = []): void
     {
         event(new ClearingResponseCache());
 
@@ -132,7 +127,7 @@ class ResponseCache
      *
      * @return \Spatie\ResponseCache\ResponseCache
      */
-    public function forget($uris, array $tags = []): self
+    public function forget(string | array $uris, array $tags = []): self
     {
         event(new ClearingResponseCache());
 

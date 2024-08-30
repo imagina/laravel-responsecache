@@ -12,12 +12,11 @@ use Spatie\ResponseCache\Exceptions\CouldNotUnserialize;
 use Spatie\ResponseCache\Replacers\Replacer;
 use Spatie\ResponseCache\ResponseCache;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Str;
 use Throwable;
 
 class CacheResponse
 {
-    protected $responseCache;
+    protected ResponseCache $responseCache;
 
     public function __construct(ResponseCache $responseCache)
     {
@@ -60,7 +59,7 @@ class CacheResponse
         return $response;
     }
 
-    protected function getCachedResponse(Request $request, array $tags = [])
+    protected function getCachedResponse(Request $request, array $tags = []): false|Response
     {
         try {
             $response = $this->responseCache->getCachedResponseFor($request, $tags);
@@ -92,9 +91,7 @@ class CacheResponse
     {
         $cachedResponse = clone $response;
 
-        $this->getReplacers()->each(function (Replacer $replacer) use ($cachedResponse) {
-            $replacer->prepareResponseToCache($cachedResponse);
-        });
+        $this->getReplacers()->each(fn (Replacer $replacer) => $replacer->prepareResponseToCache($cachedResponse));
 
         $this->responseCache->cacheResponse($request, $cachedResponse, $lifetimeInSeconds, $tags);
     }
@@ -102,9 +99,7 @@ class CacheResponse
     protected function getReplacers(): Collection
     {
         return collect(config('responsecache.replacers'))
-            ->map(function (string $replacerClass) {
-                return app($replacerClass);
-            });
+            ->map(fn (string $replacerClass) => app($replacerClass));
     }
 
     protected function getLifetime(array $args): ?int
@@ -129,7 +124,7 @@ class CacheResponse
 
     public function addCacheAgeHeader(Response $response): Response
     {
-        if (config('responsecache.add_cache_age_header') && $time = $response->headers->get(config('responsecache.cache_time_header_name'))) {
+        if (config('responsecache.add_cache_age_header') and $time = $response->headers->get(config('responsecache.cache_time_header_name'))) {
             $ageInSeconds = Carbon::parse($time)->diffInSeconds(Carbon::now());
 
             $response->headers->set(config('responsecache.cache_age_header_name'), $ageInSeconds);
