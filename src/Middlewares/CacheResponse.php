@@ -6,13 +6,13 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Modules\Core\Jobs\ClearCacheByRoutes;
 use Spatie\ResponseCache\Events\CacheMissed;
 use Spatie\ResponseCache\Events\ResponseCacheHit;
 use Spatie\ResponseCache\Exceptions\CouldNotUnserialize;
 use Spatie\ResponseCache\Replacers\Replacer;
 use Spatie\ResponseCache\ResponseCache;
 use Symfony\Component\HttpFoundation\Response;
-use Modules\Core\Jobs\ClearCacheByRoutes;
 use Throwable;
 
 class CacheResponse
@@ -38,11 +38,11 @@ class CacheResponse
 
                     if ($response !== false) {
                         $siteCleanedAt = setting("core::siteCleanedAt");
-                        if(!is_null($siteCleanedAt)){
+                        if (! is_null($siteCleanedAt)) {
                             $siteCleanedAt = Carbon::parse($siteCleanedAt);
                             $responseCachedAt = Carbon::parse($response->headers->get(config('responsecache.cache_time_header_name')));
 
-                            if($siteCleanedAt->gt($responseCachedAt)){
+                            if ($siteCleanedAt->gt($responseCachedAt)) {
                                 \Log::info("recaching ". $request->fullUrl());
                                 ClearCacheByRoutes::dispatch(null, $request->fullUrl());
                             }
