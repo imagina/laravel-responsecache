@@ -38,18 +38,19 @@ class CacheResponse
 
                     $response = $this->getCachedResponse($request, $tags);
 
-                    $siteCleanedAt = setting("core::siteCleanedAt");
-                    if(!is_null($siteCleanedAt)){
-                        $siteCleanedAt = Carbon::parse($siteCleanedAt);
-                        $responseCachedAt = Carbon::parse($response->headers->get(config('responsecache.cache_time_header_name')));
-
-                        if($siteCleanedAt->gt($responseCachedAt)){
-                            \Log::info("recaching ". $request->fullUrl());
-                            ClearCacheByRoutes::dispatch(null, $request->fullUrl());
-                        }
-                    }
-
                     if ($response !== false) {
+
+                        $siteCleanedAt = setting("core::siteCleanedAt");
+                        if(!is_null($siteCleanedAt)){
+                            $siteCleanedAt = Carbon::parse($siteCleanedAt);
+                            $responseCachedAt = Carbon::parse($response->headers->get(config('responsecache.cache_time_header_name')));
+
+                            if($siteCleanedAt->gt($responseCachedAt)){
+                                \Log::info("recaching ". $request->fullUrl());
+                                ClearCacheByRoutes::dispatch(null, $request->fullUrl());
+                            }
+                        }
+
                         return $response;
                     }
                 }
