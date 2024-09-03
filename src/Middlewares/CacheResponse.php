@@ -38,12 +38,12 @@ class CacheResponse
 
                     $response = $this->getCachedResponse($request, $tags);
 
-                    $siteCleanedAt = setting("core::siteCachedAt");
+                    $siteCleanedAt = setting("core::siteCleanedAt");
                     if(!is_null($siteCleanedAt)){
-                        $siteCachedAt = Carbon::parse($siteCleanedAt);
+                        $siteCleanedAt = Carbon::parse($siteCleanedAt);
                         $responseCachedAt = Carbon::parse($response->headers->get(config('responsecache.cache_time_header_name')));
 
-                        if($siteCachedAt->gt($responseCachedAt)){
+                        if($siteCleanedAt->gt($responseCachedAt)){
                             \Log::info("recaching ". $request->fullUrl());
                             ClearCacheByRoutes::dispatch(null, $request->fullUrl());
                         }
@@ -61,7 +61,7 @@ class CacheResponse
 
         $response = $next($request);
 
-
+//dd("aqui", $request->fullUrl(), $request->headers);
         if ($this->responseCache->enabled($request) && !$this->responseCache->shouldBypass($request)) {
             if ($this->responseCache->shouldCache($request, $response)) {
                 $this->makeReplacementsAndCacheResponse($request, $response, $lifetimeInSeconds, $tags);
