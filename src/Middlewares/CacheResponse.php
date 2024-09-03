@@ -14,6 +14,7 @@ use Spatie\ResponseCache\ResponseCache;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 use Throwable;
+use Modules\Core\Jobs\ClearCacheByRoutes;
 
 class CacheResponse
 {
@@ -36,6 +37,18 @@ class CacheResponse
                 if ($this->responseCache->hasBeenCached($request, $tags)) {
 
                     $response = $this->getCachedResponse($request, $tags);
+
+                    $siteCleanedAt = setting("core::siteCachedAt");
+                    if(!is_null($siteCleanedAt)){
+                        $siteCachedAt = Carbon::parse($siteCleanedAt);
+                        $responseCachedAt = Carbon::parse($response->headers->get(config('responsecache.cache_time_header_name')));
+
+                        if($siteCachedAt->gt($responseCachedAt)){
+                            \Log::info("recaching ". $request->fullUrl());
+                            ClearCacheByRoutes::dispatch(null, $request->fullUrl());
+                        }
+                    }
+
                     if ($response !== false) {
                         return $response;
                     }
