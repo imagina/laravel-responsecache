@@ -12,7 +12,7 @@ use Spatie\ResponseCache\Exceptions\CouldNotUnserialize;
 use Spatie\ResponseCache\Replacers\Replacer;
 use Spatie\ResponseCache\ResponseCache;
 use Symfony\Component\HttpFoundation\Response;
-use Modules\Core\Jobs\ClearCacheByRoutes;
+//use Modules\Core\Jobs\ClearCacheByRoutes;
 use Throwable;
 
 class CacheResponse
@@ -44,7 +44,7 @@ class CacheResponse
 
                             if($siteCleanedAt->gt($responseCachedAt)){
                                 \Log::info("recaching ". $request->fullUrl());
-                                ClearCacheByRoutes::dispatch(null, $request->fullUrl());
+                               // ClearCacheByRoutes::dispatch(null, $request->fullUrl());
                             }
                         }
 
