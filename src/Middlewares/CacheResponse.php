@@ -44,7 +44,7 @@ class CacheResponse
 
                             if ($siteCleanedAt->gt($responseCachedAt)) {
                                 \Log::info("recaching ". $request->fullUrl());
-                                // ClearCacheByRoutes::dispatch(null, $request->fullUrl());
+                                ClearCacheByRoutes::dispatch(null, $request->fullUrl());
                             }
                         }
 
